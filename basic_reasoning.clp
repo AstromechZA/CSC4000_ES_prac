@@ -1,20 +1,23 @@
-; lecturers can have blocked periods
-(deftemplate blocked_period (slot week) (slot day) (slot hour))
 
+(deftemplate available_slot (slot week) (slot day) (slot period) (slot room))
 
+(deftemplate blocked_slot (slot week) (slot day) (slot period) (slot room))
+
+(deftemplate booked_lecture (slot week) (slot day) (slot period) (slot room) (slot course) (slot num))
 
 
 ; create all of the available slots
 (defrule create_available_slots
 	; a slot
 	(week ?w) (day ?d) (period ?p) (room ?r)
+
 	; that is free and not blocked
-	(not (available_slot ?w ?d ?p ?r))
-	(not (blocked_slot ?w ?d ?p ?r))
+	(not (available_slot (week ?w) (day ?d) (period ?p) (room ?r)))
+	(not (blocked_slot (week ?w) (day ?d) (period ?p) (room ?r)))
 	=>
 	; m
 	(assert 
-		(available_slot ?w ?d ?p ?r)
+		(available_slot (week ?w) (day ?d) (period ?p) (room ?r))
 	)
 )
 
@@ -22,22 +25,22 @@
 	; theres a lecture
 	(lecture ?course ?lecturer ?n)
 	; that has not been placed
-	(not (booked_lecture ?wx ?dx ?px ?rx ?course ?n))
+	(not (booked_lecture (course ?course) (num ?n)))
 
 	; and an available slot
-	(available_slot ?w ?d ?p ?r)
+	(available_slot (week ?w) (day ?d) (period ?p) (room ?r))
 	; that hasnt been blocked
-	(not (blocked_slot ?w ?d ?p ?r))
+	(not (blocked_slot (week ?w) (day ?d) (period ?p) (room ?r)))
 
 	; and no other lecture from the same course on that day
-	(not (booked_lecture ?w ?d ?p2 ?r2 ?course ?n2))
+	(not (booked_lecture (week ?w) (day ?d) (course ?course)))
 
 	=>
 	(assert
 		; book the lecture
-		(booked_lecture ?w ?d ?p ?r ?course ?n)
+		(booked_lecture (week ?w) (day ?d) (period ?p) (room ?r) (course ?course) (num ?n))
 		; block the slot
-		(blocked_slot ?w ?d ?p ?r)
+		(blocked_slot (week ?w) (day ?d) (period ?p) (room ?r))
 	)
 )
 
