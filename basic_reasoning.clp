@@ -5,6 +5,8 @@
 
 (deftemplate booked_lecture (slot week) (slot day) (slot period) (slot room) (slot course) (slot num))
 
+(deftemplate lectures (slot course) (slot lecturer) (slot count))
+(deftemplate lecture (slot course) (slot lecturer) (slot num))
 
 ; create all of the available slots
 (defrule create_available_slots
@@ -23,7 +25,7 @@
 
 (defrule place_a_lecture
 	; theres a lecture
-	(lecture ?course ?lecturer ?n)
+	(lecture (course ?course) (lecturer ?lecturer) (num ?n))
 	; that has not been placed
 	(not (booked_lecture (course ?course) (num ?n)))
 
@@ -45,22 +47,22 @@
 )
 
 (defrule split_course
-	?f <- (course ?course ?lecturer ?num_lectures)
-	(test (> ?num_lectures 1))
+	?f <- (lectures (course ?c) (lecturer ?l) (count ?n))
+	(test (> ?n 1))
 	=>
 	(retract ?f)
 	(assert
-		(lecture ?course ?lecturer ?num_lectures)
-		(course ?course ?lecturer (- ?num_lectures 1))
+		(lecture (course ?c) (lecturer ?l) (num ?n))
+		(lectures (course ?c) (lecturer ?l) (count (- ?n 1)))
 	)
 )
 (defrule split_course2
-	?f <- (course ?course ?lecturer ?num_lectures)
-	(test (eq ?num_lectures 1))
+	?f <- (lectures (course ?c) (lecturer ?l) (count ?n))
+	(test (eq ?n 1))
 	=>
 	(retract ?f)
 	(assert
-		(lecture ?course ?lecturer ?num_lectures)
+		(lecture (course ?c) (lecturer ?l) (num ?n))
 	)
 )
 
@@ -95,8 +97,8 @@
 		; and there are rooms
 		(room CSC303)
 
-		(course VIS "Michelle Kuttel" 20)
-		(course IR "Hussein Suleman" 20)
+		(lectures (course VIS) (lecturer "Michelle Kuttel") (count 20))
+		(lectures (course IR) (lecturer "Hussein Suleman") (count 20))
 	)
 )
 
