@@ -92,24 +92,27 @@
 
 			; print out period and course in columns
 			(format t "|%-8s|" ?period:value)			
-			(do-for-all-facts ((?day day)) TRUE				
-				(if (not(do-for-fact ((?bl booked_lecture)) (and (= ?bl:week ?week:value) (eq ?bl:period ?period:value) (eq ?bl:day ?day:value))
-						(format t " %-10s |" ?bl:course)
-					))
-					then
-						(printout t "            |")
+			(do-for-all-facts ((?day day)) TRUE	
+				(bind ?slot_lectures (find-fact ((?bl booked_lecture)) (and (eq ?bl:week ?week:value) (eq ?bl:period ?period:value) (eq ?bl:day ?day:value))))	
+				(if (> (length$ ?slot_lectures) 0) then
+					(bind ?slot_lecture (nth$ 1 ?slot_lectures))
+					(format t " %-10s |" (fact-slot-value ?slot_lecture course))
+				else
+					(printout t "            |")
 				)
 			)
-			(printout t crlf "|        |")			
+			(printout t crlf "|        |")	
+
 			; print out room name in colums
-			(do-for-all-facts ((?day day)) TRUE				
-				(if (not(do-for-fact ((?bl booked_lecture)) (and (= ?bl:week ?week:value) (eq ?bl:period ?period:value) (eq ?bl:day ?day:value))
-						(format t " %-10s |" ?bl:room)
-					))
-					then
-						(printout t "            |")
+			(do-for-all-facts ((?day day)) TRUE	
+				(bind ?slot_lectures (find-fact ((?bl booked_lecture)) (and (eq ?bl:week ?week:value) (eq ?bl:period ?period:value) (eq ?bl:day ?day:value))))	
+				(if (> (length$ ?slot_lectures) 0) then
+					(bind ?slot_lecture (nth$ 1 ?slot_lectures))
+					(format t " %-10s |" (fact-slot-value ?slot_lecture room))
+				else
+					(printout t "            |")
 				)
-			)			
+			)		
 			(printout t crlf "|--------|------------|------------|------------|------------|------------|" crlf)						
 		)
 		
@@ -161,6 +164,8 @@
 	(period (value "15:00"))
 
 	; and there are rooms
+	(room (value "CSC LT 2A"))
+	(room (value "CSC302"))
 	(room (value "CSC303"))
 
 	; and lecturers with the modules they teach X times
