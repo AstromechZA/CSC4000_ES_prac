@@ -1,4 +1,4 @@
-(reset)
+(clear)
 
 (deftemplate available_slot (slot week) (slot day) (slot period) (slot room))
 (deftemplate blocked_slot (slot week) (slot day) (slot period) (slot room))
@@ -13,7 +13,7 @@
 	(week ?w) (day ?d) (period ?p) (room ?r)
 
 	; that is free and not blocked
-	(not (blocked_slot (week ?w) (day ?d) (period ?p) (room ?r)))
+	(not (blocked_slot (week ?w|*) (day ?d|*) (period ?p|*) (room ?r)))
 	=>
 	(assert 
 		(available_slot (week ?w) (day ?d) (period ?p) (room ?r))
@@ -22,21 +22,23 @@
 
 (defrule place_a_lecture
 	; theres a lecture
-	(lecture (course ?course) (lecturer ?lecturer) (num ?n))
+	?f1 <- (lecture (course ?course) (lecturer ?lecturer) (num ?n))
 	; that has not been placed
 	(not (booked_lecture (course ?course) (num ?n)))
 
-	; and an available slot
-	(available_slot (week ?w) (day ?d) (period ?p) (room ?r))
-	; that hasnt been blocked
-	(not (blocked_slot (week ?w) (day ?d) (period ?p) (room ?r)))
+	; and an available venue slot
+	?f2 <- (available_slot (week ?w) (day ?d) (period ?p) (room ?r))
 
-	; and no other lecture from the same course on that day
+	; and no other lecture from the same course is on that day
 	(not (booked_lecture (week ?w) (day ?d) (course ?course)))
 	
-	(not (lecturer_busy (week ?w) (day ?d) (period ?p) (lecturer ?lecturer)))
+	; and the lecturer isn't already busy during that period
+	(not (lecturer_busy (week ?w|*) (day ?d|*) (period ?p|*) (lecturer ?lecturer)))
 
 	=>
+	; no longer need these and they clutter fact list
+	(retract ?f1 ?f2)
+	
 	(assert
 		; book the lecture
 		(booked_lecture (week ?w) (day ?d) (period ?p) (room ?r) (course ?course) (num ?n))
@@ -50,21 +52,12 @@
 
 (defrule split_course
 	?f <- (lectures (course ?c) (lecturer ?l) (count ?n))
-	(test (> ?n 1))
 	=>
 	(retract ?f)
-	(assert		
-		(lecture (course ?c) (lecturer ?l) (num ?n))
-		(lectures (course ?c) (lecturer ?l) (count (- ?n 1)))
-	)
-)
-(defrule split_course2
-	?f <- (lectures (course ?c) (lecturer ?l) (count ?n))
-	(test (eq ?n 1))
-	=>
-	(retract ?f)
-	(assert
-		(lecture (course ?c) (lecturer ?l) (num ?n))
+	(loop-for-count (?s ?n) do		
+		(assert		
+			(lecture (course ?c) (lecturer ?l) (num ?s))
+		)
 	)
 )
 
@@ -90,6 +83,7 @@
 	(period h1000)
 	(period h1100)
 	(period h1200)
+	(period h1300)
 	(period h1400)
 	(period h1500)
 
@@ -99,7 +93,31 @@
 	; and lecturers with the modules they teach X times
 	(lectures (course VIS) (lecturer "Michelle Kuttel") (count 20))
 	(lectures (course IR) (lecturer "Hussein Suleman") (count 20))
+	
+	; student advisors have their open office hours where they can't have lectures
+	(lecturer_busy (week *) (day monday) (period h0900) (lecturer "Michelle Kuttel"))
+	(lecturer_busy (week *) (day tuesday) (period h1400) (lecturer "Hussein Suleman"))
+	
+	; Room CSC303 is booked every Thursday during meridian for colloqiums
+	(blocked_slot (week *) (day thursday) (period h1300) (room CSC303))
 )
-
+(deffunction find_unplaced_lectures()
+	(printout t crlf)
+	(printout t "List of lectures that could not be scheduled:" crlf)
+	(printout t "---------------------------------------------" crlf)
+	
+	(if (> (length (find-all-facts ((?m lecture)) TRUE)) 0) 
+		then
+			(do-for-fact ((?l lecture)) TRUE 
+				(printout t ?l:course " lecture #" ?l:num crlf)
+			)
+			(printout t crlf)
+		else
+			(printout t "None." crlf crlf)
+	)
+	
+)
+		 
+(reset)
 (run)
-(facts)
+(find_unplaced_lectures)
