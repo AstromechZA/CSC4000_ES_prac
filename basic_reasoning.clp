@@ -20,7 +20,7 @@
 	(room (value ?r))
 
 	; that is free and not blocked
-	(not (blocked_slot (week ?w|*) (day ?d|*) (period ?p|*) (room ?r)))
+	(not (blocked_slot (week ?w|*) (day ?d|*) (period ?p|*) (room ?r|*)))
 	=>
 	(assert 
 		(available_slot (week ?w) (day ?d) (period ?p) (room ?r))
@@ -58,10 +58,15 @@
 	)
 )
 
+; Because we cen define lecture's in batches as 'lectures' 
+; we need to split these into their individual lecture periods.
 (defrule split_course
+	; if there are any lecture batches defined
 	?f <- (lectures (course ?c) (lecturer ?l) (count ?n))
 	=>
+	; retract the fact
 	(retract ?f)
+	; add n lectures
 	(loop-for-count (?s ?n) do		
 		(assert		
 			(lecture (course ?c) (lecturer ?l) (num ?s))
@@ -168,6 +173,9 @@
 	
 	; Room CSC303 is booked every Thursday during meridian for colloqiums
 	(blocked_slot (week *) (day "Thursday") (period "13:00") (room "CSC303"))
+
+	; in fact, nothing can happen at meridian 13:00
+	(blocked_slot (week *) (day *) (period "13:00") (room *))
 )
 
 ; reset all facts		 
