@@ -1,6 +1,9 @@
 (clear)
 
-(deftemplate n-v (slot name) (slot value))
+(deftemplate week (slot value))
+(deftemplate day (slot value))
+(deftemplate period (slot value))
+(deftemplate room (slot value))
 (deftemplate available_slot (slot week) (slot day) (slot period) (slot room))
 (deftemplate blocked_slot (slot week) (slot day) (slot period) (slot room))
 (deftemplate booked_lecture (slot week) (slot day) (slot period) (slot room) (slot course) (slot num))
@@ -11,11 +14,10 @@
 ; create all of the available slots
 (defrule create_available_slots
 	; a slot
-	(n-v (name week) (value ?w))
-	(n-v (name day) (value ?d))
-	(n-v (name period) (value ?p))
-	(n-v (name room) (value ?r))
-	;(week ?w) (day ?d) (period ?p) (room ?r)
+	(week (value ?w))
+	(day (value ?d))
+	(period (value ?p))
+	(room (value ?r))
 
 	; that is free and not blocked
 	(not (blocked_slot (week ?w|*) (day ?d|*) (period ?p|*) (room ?r)))
@@ -47,6 +49,7 @@
 	(assert
 		; book the lecture
 		(booked_lecture (week ?w) (day ?d) (period ?p) (room ?r) (course ?course) (num ?n))
+
 		; block the slot
 		(blocked_slot (week ?w) (day ?d) (period ?p) (room ?r))
 		
@@ -66,66 +69,25 @@
 	)
 )
 
-(deffacts startup
-	; there are 6 weeks
-	(n-v (name week) (value 1))
-	(n-v (name week) (value 2))
-	(n-v (name week) (value 3))
-	(n-v (name week) (value 4))
-	(n-v (name week) (value 5))
-	(n-v (name week) (value 6))
-
-	; with 5 days
-	(n-v (name day) (value monday))
-	(n-v (name day) (value tuesday))
-	(n-v (name day) (value wednesday))
-	(n-v (name day) (value thursday))
-	(n-v (name day) (value friday))
-
-	; with 7 periods
-	(n-v (name period) (value h0800))
-	(n-v (name period) (value h0900))
-	(n-v (name period) (value h1000))
-	(n-v (name period) (value h1100))
-	(n-v (name period) (value h1200))
-	(n-v (name period) (value h1300))
-	(n-v (name period) (value h1400))
-	(n-v (name period) (value h1500))
-
-	; and there are rooms
-	(n-v (name room) (value CSC303))
-
-	; and lecturers with the modules they teach X times
-	(lectures (course VIS) (lecturer "Michelle Kuttel") (count 20))
-	(lectures (course IR) (lecturer "Hussein Suleman") (count 20))
-	
-	; student advisors have their open office hours where they can't have lectures
-	(lecturer_busy (week *) (day friday) (period h0900) (lecturer "Michelle Kuttel"))
-	(lecturer_busy (week *) (day wednesday) (period h0800) (lecturer "Hussein Suleman"))
-	
-	; Room CSC303 is booked every Thursday during meridian for colloqiums
-	(blocked_slot (week *) (day thursday) (period h1300) (room CSC303))
-)
-
 (deffunction print_timetable()
 	(printout t crlf)
-	(do-for-all-facts ((?week n-v)) (eq ?week:name week)
+	(do-for-all-facts ((?week week)) TRUE
 		(printout t crlf "Week " ?week:value crlf)
 		(printout t "---------------------------------------------------------------------------" crlf)
 		
 		; print out day names
 		(printout t "|        |")
-		(do-for-all-facts ((?day n-v)) (eq ?day:name day)
+		(do-for-all-facts ((?day day)) TRUE
 			(format t " %-10s |" ?day:value)
 		)
 		(printout t crlf "---------------------------------------------------------------------------" crlf)
 
 		; loop table rows
-		(do-for-all-facts ((?period n-v)) (eq ?period:name period)
+		(do-for-all-facts ((?period period)) TRUE
 
 			; print out period and course in columns
 			(format t "|%-8s|" ?period:value)			
-			(do-for-all-facts ((?day n-v)) (eq ?day:name day)				
+			(do-for-all-facts ((?day day)) TRUE				
 				(if (not(do-for-fact ((?bl booked_lecture)) (and (= ?bl:week ?week:value) (eq ?bl:period ?period:value) (eq ?bl:day ?day:value))
 						(format t " %-10s |" ?bl:course)
 					))
@@ -135,7 +97,7 @@
 			)
 			(printout t crlf "|        |")			
 			; print out room name in colums
-			(do-for-all-facts ((?day n-v)) (eq ?day:name day)				
+			(do-for-all-facts ((?day day)) TRUE				
 				(if (not(do-for-fact ((?bl booked_lecture)) (and (= ?bl:week ?week:value) (eq ?bl:period ?period:value) (eq ?bl:day ?day:value))
 						(format t " %-10s |" ?bl:room)
 					))
@@ -167,7 +129,52 @@
 	)	
 )
 		 
+(deffacts startup
+	; there are 6 weeks
+	(week (value 1))
+	(week (value 2))
+	(week (value 3))
+	(week (value 4))
+	(week (value 5))
+	(week (value 6))
+
+	; with 5 days
+	(day (value "Monday"))
+	(day (value "Tuesday"))
+	(day (value "Wednesday"))
+	(day (value "Thursday"))
+	(day (value "Friday"))
+
+	; with 7 periods
+	(period (value "08:00"))
+	(period (value "09:00"))
+	(period (value "10:00"))
+	(period (value "11:00"))
+	(period (value "12:00"))
+	(period (value "13:00"))
+	(period (value "14:00"))
+	(period (value "15:00"))
+
+	; and there are rooms
+	(room (value "CSC303"))
+
+	; and lecturers with the modules they teach X times
+	(lectures (course "VIS") (lecturer "Michelle Kuttel") (count 20))
+	(lectures (course "IR") (lecturer "Hussein Suleman") (count 20))
+	
+	; student advisors have their open office hours where they can't have lectures
+	(lecturer_busy (week *) (day "Friday") (period "09:00") (lecturer "Michelle Kuttel"))
+	(lecturer_busy (week *) (day "Wednesday") (period "10:00") (lecturer "Hussein Suleman"))
+	
+	; Room CSC303 is booked every Thursday during meridian for colloqiums
+	(blocked_slot (week *) (day "Thursday") (period "13:00") (room "CSC303"))
+)
+
+; reset all facts		 
 (reset)
+; load facts, run reasoning
 (run)
+; print the final timetable
 (print_timetable)
+; show any unscheduled lectures
 (find_unplaced_lectures)
