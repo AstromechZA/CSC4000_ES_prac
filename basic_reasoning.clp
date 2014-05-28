@@ -170,7 +170,9 @@
 
 	; and lecturers with the modules they teach X times
 	(lectures (course "VIS") (lecturer "Michelle Kuttel") (count 20))
-	(lectures (course "IR") (lecturer "Hussein Suleman") (count 20))
+	(lectures (course "IR") (lecturer "Hussein Suleman") (count 16))
+	(lectures (course "EC") (lecturer "Geoff Nitschke") (count 13))
+	(lectures (course "NIS") (lecturer "Andrew Hutchison") (count 16))
 	
 	; student advisors have their open office hours where they can't have lectures
 	(lecturer_busy (week *) (day "Friday") (period "09:00") (lecturer "Michelle Kuttel"))
@@ -181,6 +183,9 @@
 
 	; in fact, nothing can happen at meridian 13:00
 	(blocked_slot (week *) (day *) (period "13:00") (room *))
+	
+	; and students REALLY hate 8AM lectures
+	(blocked_slot (week *) (day *) (period "08:00") (room *))
 )
 
 ; reset all facts		 
