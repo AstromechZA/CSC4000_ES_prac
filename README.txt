@@ -10,9 +10,16 @@ Honours Timetable Scheduler
 
 ## How to run:
 - Open CLIPS console
-- run `(batch "honours_timetable.clp")`
-OR
-- run `CLIPSDOS.exe -f honours_timetable.clp`
+
+$ (reset)
+$ (clear)
+
+$ (load "schedular.clp")
+$ (batch "facts.clp")
+$ (run)
+
+$ (print_timetable)         		# to display the graphical timetable
+$ (find_unplaced_lectures)			# to identify lectures that weren't placed
 
 
 
