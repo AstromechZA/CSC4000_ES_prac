@@ -1,6 +1,6 @@
 (clear)
 
-(deftemplate week (slot value))
+(deftemplate week (slot value) (slot startdate))
 (deftemplate day (slot value))
 (deftemplate period (slot value))
 (deftemplate room (slot value))
@@ -77,7 +77,7 @@
 (deffunction print_timetable()
 	(printout t crlf)
 	(do-for-all-facts ((?week week)) TRUE
-		(printout t crlf "Week " ?week:value crlf)
+		(printout t crlf "Week " ?week:value " - " ?week:startdate crlf)
 		(printout t "---------------------------------------------------------------------------" crlf)
 		
 		; print out day names
@@ -139,13 +139,13 @@
 		 
 (deffacts startup
 	; there are 6 weeks
-	(week (value 1))
-	(week (value 2))
-	(week (value 3))
-	(week (value 4))
-	(week (value 5))
-	(week (value 6))
-	(week (value 7))
+	(week (value 1) (startdate "17 February"))
+	(week (value 2) (startdate "24 February"))
+	(week (value 3) (startdate "03 March"))
+	(week (value 4) (startdate "10 March"))
+	(week (value 5) (startdate "17 March"))
+	(week (value 6) (startdate "24 March"))
+	(week (value 7) (startdate "31 March"))
 
 	; with 5 days
 	(day (value "Monday"))
@@ -265,6 +265,8 @@
 	(lecturer_busy (week 7) (day "Tuesday") (period "10:00") (lecturer "Simon Perkins"))
 	(lecturer_busy (week 7) (day "Thursday") (period "10:00") (lecturer "Simon Perkins"))
 
+	; HOLIDAYS!
+	(blocked_slot (week 5) (day "Friday") (period *) (room *))
 
 
 

@@ -10,7 +10,7 @@ Honours Timetable Scheduler
 
 ## How to run:
 - Open CLIPS console
-- run ```(batch honours_timetable.clp)```
+- run `(batch "honours_timetable.clp")`
 
 
 
