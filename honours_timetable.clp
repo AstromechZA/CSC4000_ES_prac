@@ -2,7 +2,7 @@
 
 (deftemplate week (slot value) (slot startdate))
 (deftemplate day (slot value))
-(deftemplate period (slot value))
+(deftemplate period (slot value) (slot timestring))
 (deftemplate room (slot value))
 (deftemplate available_slot (slot week) (slot day) (slot period) (slot room))
 (deftemplate blocked_slot (slot week) (slot day) (slot period) (slot room))
@@ -16,11 +16,11 @@
 	; a slot
 	(week (value ?w))
 	(day (value ?d))
-	(period (value ?p))
+	(period (value ?p) (timestring ?ts))
 	(room (value ?r))
 
 	; that is free and not blocked
-	(not (blocked_slot (week ?w|*) (day ?d|*) (period ?p|*) (room ?r|*)))
+	(not (blocked_slot (week ?w|*) (day ?d|*) (period ?p|*|?ts) (room ?r|*)))
 	=>
 	(assert 
 		(available_slot (week ?w) (day ?d) (period ?p) (room ?r))
@@ -29,34 +29,119 @@
 
 (defrule place_a_lecture
 	; theres a lecture
-	?f1 <- (lecture (course ?course) (lecturer ?lecturer) (num ?n))
+	?f1 <- (lecture (course ?course) (lecturer ?lecturer) (num ?n) (length 1))
 	; that has not been placed
 	(not (booked_lecture (course ?course) (num ?n)))
 
 	; and an available venue slot
-	?f2 <- (available_slot (week ?w) (day ?d) (period ?p) (room ?r))
+	?avslot1 <- (available_slot (week ?w) (day ?d) (period ?p) (room ?r))
+
+	; convert period value to ts
+	(period (value ?p) (timestring ?ts1))
 
 	; and no other lecture from the same course is on that day
 	(not (booked_lecture (week ?w) (day ?d) (course ?course)))
 	
 	; and the lecturer isn't already busy during that period
-	(not (lecturer_busy (week ?w|*) (day ?d|*) (period ?p|*) (lecturer ?lecturer)))
+	(not (lecturer_busy (week ?w|*) (day ?d|*) (period ?ts1|*) (lecturer ?lecturer)))
 
 	=>
 	; no longer need these and they clutter fact list
-	(retract ?f1 ?f2)
+	(retract ?f1 ?avslot1)
 	
 	(assert
 		; book the lecture
-		(booked_lecture (week ?w) (day ?d) (period ?p) (room ?r) (course ?course) (num ?n))
+		(booked_lecture (week ?w) (day ?d) (period ?ts1) (room ?r) (course ?course) (num ?n))
 
 		; block the slot
-		(blocked_slot (week ?w) (day ?d) (period ?p) (room ?r))
+		(blocked_slot (week ?w) (day ?d) (period ?ts1) (room ?r))
 		
 		; lecturer busy during that period
-		(lecturer_busy (week ?w) (day ?d) (period ?p) (lecturer ?lecturer))
+		(lecturer_busy (week ?w) (day ?d) (period ?ts1) (lecturer ?lecturer))
 	)
 )
+
+(defrule place_double_lecture
+	?f1 <- (lecture (course ?course) (lecturer ?lecturer) (num ?n) (length 2))
+	; that has not been placed
+	(not (booked_lecture (course ?course) (num ?n)))
+
+	; and an available venue slot
+	?avslot1 <- (available_slot (week ?w) (day ?d) (period ?p1) (room ?r))
+	?avslot2 <- (available_slot (week ?w) (day ?d) (period ?p2) (room ?r))
+
+	(test (eq (+ ?p1 1) ?p2))
+
+	(period (value ?p1) (timestring ?ts1))
+	(period (value ?p2) (timestring ?ts2))
+
+	(not (booked_lecture (week ?w) (day ?d) (course ?course)))
+
+	(not (lecturer_busy (week ?w|*) (day ?d|*) (period ?ts1|*) (lecturer ?lecturer)))
+	(not (lecturer_busy (week ?w|*) (day ?d|*) (period ?ts2|*) (lecturer ?lecturer)))
+
+	=>
+	(retract ?f1 ?avslot1 ?avslot2)
+
+	(assert
+		; book the lecture
+		(booked_lecture (week ?w) (day ?d) (period ?ts1) (room ?r) (course ?course) (num ?n))
+		(booked_lecture (week ?w) (day ?d) (period ?ts2) (room ?r) (course ?course) (num ?n))
+
+		; block the slot
+		(blocked_slot (week ?w) (day ?d) (period ?ts1) (room ?r))
+		(blocked_slot (week ?w) (day ?d) (period ?ts2) (room ?r))
+		
+		; lecturer busy during that period
+		(lecturer_busy (week ?w) (day ?d) (period ?ts1) (lecturer ?lecturer))
+		(lecturer_busy (week ?w) (day ?d) (period ?ts2) (lecturer ?lecturer))
+	)
+)
+
+(defrule place_triple_lecture
+	?f1 <- (lecture (course ?course) (lecturer ?lecturer) (num ?n) (length 3))
+	; that has not been placed
+	(not (booked_lecture (course ?course) (num ?n)))
+
+	; and an available venue slot
+	?avslot1 <- (available_slot (week ?w) (day ?d) (period ?p1) (room ?r))
+	?avslot2 <- (available_slot (week ?w) (day ?d) (period ?p2) (room ?r))
+	?avslot3 <- (available_slot (week ?w) (day ?d) (period ?p3) (room ?r))
+
+	(test (eq (+ ?p1 1) ?p2))
+	(test (eq (+ ?p1 2) ?p3))
+
+	(period (value ?p1) (timestring ?ts1))
+	(period (value ?p2) (timestring ?ts2))
+	(period (value ?p3) (timestring ?ts3))
+
+	(not (booked_lecture (week ?w) (day ?d) (course ?course)))
+
+	(not (lecturer_busy (week ?w|*) (day ?d|*) (period ?ts1|*) (lecturer ?lecturer)))
+	(not (lecturer_busy (week ?w|*) (day ?d|*) (period ?ts2|*) (lecturer ?lecturer)))
+	(not (lecturer_busy (week ?w|*) (day ?d|*) (period ?ts3|*) (lecturer ?lecturer)))
+
+	=>
+	(retract ?f1 ?avslot1 ?avslot2 ?avslot3)
+
+	(assert
+		; book the lecture
+		(booked_lecture (week ?w) (day ?d) (period ?ts1) (room ?r) (course ?course) (num ?n))
+		(booked_lecture (week ?w) (day ?d) (period ?ts2) (room ?r) (course ?course) (num ?n))
+		(booked_lecture (week ?w) (day ?d) (period ?ts3) (room ?r) (course ?course) (num ?n))
+
+		; block the slot
+		(blocked_slot (week ?w) (day ?d) (period ?ts1) (room ?r))
+		(blocked_slot (week ?w) (day ?d) (period ?ts2) (room ?r))
+		(blocked_slot (week ?w) (day ?d) (period ?ts3) (room ?r))
+		
+		; lecturer busy during that period
+		(lecturer_busy (week ?w) (day ?d) (period ?ts1) (lecturer ?lecturer))
+		(lecturer_busy (week ?w) (day ?d) (period ?ts2) (lecturer ?lecturer))
+		(lecturer_busy (week ?w) (day ?d) (period ?ts3) (lecturer ?lecturer))
+	)
+)
+
 
 ; Because we cen define lecture's in batches as 'lectures' 
 ; we need to split these into their individual lecture periods.
@@ -69,7 +154,7 @@
 	; add n lectures
 	(loop-for-count (?s ?n) do		
 		(assert		
-			(lecture (course ?c) (lecturer ?l) (num ?s))
+			(lecture (course ?c) (lecturer ?l) (num ?s) (length 1))
 		)
 	)
 )
@@ -91,9 +176,9 @@
 		(do-for-all-facts ((?period period)) TRUE
 
 			; print out period and course in columns
-			(format t "|%-8s|" ?period:value)			
+			(format t "|%-8s|" ?period:timestring)			
 			(do-for-all-facts ((?day day)) TRUE	
-				(bind ?slot_lectures (find-fact ((?bl booked_lecture)) (and (eq ?bl:week ?week:value) (eq ?bl:period ?period:value) (eq ?bl:day ?day:value))))	
+				(bind ?slot_lectures (find-fact ((?bl booked_lecture)) (and (eq ?bl:week ?week:value) (eq ?bl:period ?period:timestring) (eq ?bl:day ?day:value))))	
 				(if (> (length$ ?slot_lectures) 0) then
 					(bind ?slot_lecture (nth$ 1 ?slot_lectures))
 					(format t " %-10s |" (fact-slot-value ?slot_lecture course))
@@ -105,7 +190,7 @@
 
 			; print out room name in colums
 			(do-for-all-facts ((?day day)) TRUE	
-				(bind ?slot_lectures (find-fact ((?bl booked_lecture)) (and (eq ?bl:week ?week:value) (eq ?bl:period ?period:value) (eq ?bl:day ?day:value))))	
+				(bind ?slot_lectures (find-fact ((?bl booked_lecture)) (and (eq ?bl:week ?week:value) (eq ?bl:period ?period:timestring) (eq ?bl:day ?day:value))))	
 				(if (> (length$ ?slot_lectures) 0) then
 					(bind ?slot_lecture (nth$ 1 ?slot_lectures))
 					(format t " %-10s |" (fact-slot-value ?slot_lecture room))
@@ -155,14 +240,15 @@
 	(day (value "Friday"))
 
 	; with 7 periods
-	(period (value "08:00"))
-	(period (value "09:00"))
-	(period (value "10:00"))
-	(period (value "11:00"))
-	(period (value "12:00"))
-	(period (value "13:00"))
-	(period (value "14:00"))
-	(period (value "15:00"))
+	(period (value 1) (timestring "08:00"))
+	(period (value 2) (timestring "09:00"))
+	(period (value 3) (timestring "10:00"))
+	(period (value 4) (timestring "11:00"))
+	(period (value 5) (timestring "12:00"))
+	(period (value 6) (timestring "13:00"))
+	(period (value 7) (timestring "14:00"))
+	(period (value 8) (timestring "15:00"))
+	(period (value 9) (timestring "16:00"))
 
 	; and there are rooms
 	(room (value "CSC LT 2A"))
@@ -175,6 +261,8 @@
 	(lectures (course "EC") (lecturer "Geoff Nitschke") (count 13))
 	(lectures (course "NIS") (lecturer "Andrew Hutchison") (count 16))
 	(lectures (course "ICT4D") (lecturer "Edwin Blake") (count 20))
+
+	(lecture (course "IR") (lecturer "Hussein Suleman") (num 21) (length 3))
 	
 	; student advisors have their open office hours where they can't have lectures
 	(lecturer_busy (week *) (day "Friday") (period "09:00") (lecturer "Michelle Kuttel"))
