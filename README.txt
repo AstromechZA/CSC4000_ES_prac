@@ -11,6 +11,8 @@ Honours Timetable Scheduler
 ## How to run:
 - Open CLIPS console
 - run `(batch "honours_timetable.clp")`
+OR
+- run `CLIPSDOS.exe -f honours_timetable.clp`
 
 
 

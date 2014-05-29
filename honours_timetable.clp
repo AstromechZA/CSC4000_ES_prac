@@ -293,12 +293,6 @@
 	; but not on fridays
 	(lecturer_busy (week *) (day "Friday") (period *) (lecturer "Edwin Blake"))
 
-	
-
-
-
-
-
 	; student advisors have their open office hours where they can't have lectures
 	(lecturer_busy (week *) (day "Friday") (period "09:00") (lecturer "Michelle Kuttel"))
 	(lecturer_busy (week *) (day "Wednesday") (period "10:00") (lecturer "Hussein Suleman"))
