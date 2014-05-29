@@ -256,14 +256,49 @@
 	(room (value "CSC303"))
 
 	; and lecturers with the modules they teach X times
-	(lectures (course "VIS") (lecturer "Michelle Kuttel") (count 20))
-	(lectures (course "IR") (lecturer "Hussein Suleman") (count 16))
-	(lectures (course "EC") (lecturer "Geoff Nitschke") (count 13))
-	(lectures (course "NIS") (lecturer "Andrew Hutchison") (count 16))
-	(lectures (course "ICT4D") (lecturer "Edwin Blake") (count 20))
 
-	(lecture (course "IR") (lecturer "Hussein Suleman") (num 21) (length 3))
+	; VIS is double and triple lectures
+	(lecture (course "VIS") (lecturer "Michelle Kuttel") (num 1) (length 2))
+	(lecture (course "VIS") (lecturer "Michelle Kuttel") (num 2) (length 2))
+	(lecture (course "VIS") (lecturer "Michelle Kuttel") (num 3) (length 2))
+	(lecture (course "VIS") (lecturer "Michelle Kuttel") (num 4) (length 2))
+	(lecture (course "VIS") (lecturer "Michelle Kuttel") (num 5) (length 3))
+	(lecture (course "VIS") (lecturer "Michelle Kuttel") (num 6) (length 3))
+	(lecture (course "VIS") (lecturer "Michelle Kuttel") (num 7) (length 3))
+	(lecture (course "VIS") (lecturer "Michelle Kuttel") (num 8) (length 3))
+	(lecture (course "VIS") (lecturer "Michelle Kuttel") (num 9) (length 3))
+
+	; IR is 16 singles
+	(lectures (course "IR") (lecturer "Hussein Suleman") (count 16))
+	; but not on fridays
+	(lecturer_busy (week *) (day "Friday") (period *) (lecturer "Hussein Suleman"))
+
+	; EC is also singles with some others at the end
+	(lectures (course "EC") (lecturer "Geoff Nitschke") (count 10))
+	(lecture (course "EC") (lecturer "Geoff Nitschke") (num 11) (length 3))
+	(lecture (course "EC") (lecturer "Geoff Nitschke") (num 12) (length 2))
+	(lecture (course "EC") (lecturer "Geoff Nitschke") (num 13) (length 2))
+
+	; NIS is all doubles
+	(lecture (course "NIS") (lecturer "Andrew Hutchison") (num 1) (length 2))
+	(lecture (course "NIS") (lecturer "Andrew Hutchison") (num 2) (length 2))
+	(lecture (course "NIS") (lecturer "Andrew Hutchison") (num 3) (length 2))
+	(lecture (course "NIS") (lecturer "Andrew Hutchison") (num 4) (length 2))
+	(lecture (course "NIS") (lecturer "Andrew Hutchison") (num 5) (length 2))
+	(lecture (course "NIS") (lecturer "Andrew Hutchison") (num 6) (length 2))
+	(lecture (course "NIS") (lecturer "Andrew Hutchison") (num 7) (length 2))
+
+	; ICT4D is all singles
+	(lectures (course "ICT4D") (lecturer "Edwin Blake") (count 24))
+	; but not on fridays
+	(lecturer_busy (week *) (day "Friday") (period *) (lecturer "Edwin Blake"))
+
 	
+
+
+
+
+
 	; student advisors have their open office hours where they can't have lectures
 	(lecturer_busy (week *) (day "Friday") (period "09:00") (lecturer "Michelle Kuttel"))
 	(lecturer_busy (week *) (day "Wednesday") (period "10:00") (lecturer "Hussein Suleman"))
