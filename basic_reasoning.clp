@@ -145,6 +145,7 @@
 	(week (value 4))
 	(week (value 5))
 	(week (value 6))
+	(week (value 7))
 
 	; with 5 days
 	(day (value "Monday"))
@@ -186,6 +187,90 @@
 	
 	; and students REALLY hate 8AM lectures
 	(blocked_slot (week *) (day *) (period "08:00") (room *))
+
+	; block things according to other timetables
+	; CSC1015F
+	(lecturer_busy (week *) (day "Monday") (period "11:00") (lecturer "Hussein Suleman"))
+	(lecturer_busy (week *) (day "Tuesday") (period "11:00") (lecturer "Hussein Suleman"))
+	(lecturer_busy (week *) (day "Wednesday") (period "11:00") (lecturer "Hussein Suleman"))
+	(lecturer_busy (week *) (day "Thursday") (period "11:00") (lecturer "Hussein Suleman"))
+	(lecturer_busy (week *) (day "Monday") (period "12:00") (lecturer "Hussein Suleman"))
+	(lecturer_busy (week *) (day "Tuesday") (period "12:00") (lecturer "Hussein Suleman"))
+	(lecturer_busy (week *) (day "Wednesday") (period "12:00") (lecturer "Hussein Suleman"))
+	(lecturer_busy (week *) (day "Thursday") (period "12:00") (lecturer "Hussein Suleman"))
+
+	; CSC1017F
+	(lecturer_busy (week *) (day "Monday") (period "11:00") (lecturer "Audrey Mbogho"))
+	(lecturer_busy (week *) (day "Tuesday") (period "11:00") (lecturer "Audrey Mbogho"))
+	(lecturer_busy (week *) (day "Thursday") (period "11:00") (lecturer "Audrey Mbogho"))
+
+	; CSC2001F
+	(lecturer_busy (week 1) (day *) (period "09:00") (lecturer "Patrick Marais"))
+	(lecturer_busy (week 2) (day *) (period "09:00") (lecturer "Audrey Mbogho"))
+	(lecturer_busy (week 3) (day *) (period "09:00") (lecturer "Audrey Mbogho"))
+	(lecturer_busy (week 4) (day *) (period "09:00") (lecturer "Audrey Mbogho"))
+	(lecturer_busy (week 5) (day *) (period "09:00") (lecturer "Anne Kayem"))
+	(lecturer_busy (week 6) (day *) (period "09:00") (lecturer "Anne Kayem"))
+	(lecturer_busy (week 7) (day *) (period "09:00") (lecturer "Anne Kayem"))
+
+	; CSC3002F
+	(lecturer_busy (week 1) (day "Monday") (period "09:00") (lecturer "Anne Kayem"))
+	(lecturer_busy (week 1) (day "Tuesday") (period "09:00") (lecturer "Anne Kayem"))
+	(lecturer_busy (week 1) (day "Wednesday") (period "09:00") (lecturer "Anne Kayem"))
+	(lecturer_busy (week 2) (day *) (period "09:00") (lecturer "Anne Kayem"))
+	(lecturer_busy (week 3) (day "Monday") (period "09:00") (lecturer "Anne Kayem"))
+	(lecturer_busy (week 3) (day "Tuesday") (period "09:00") (lecturer "Anne Kayem"))
+	(lecturer_busy (week 3) (day "Wednesday") (period "09:00") (lecturer "Anne Kayem"))
+	(lecturer_busy (week 3) (day "Thursday") (period "09:00") (lecturer "Anne Kayem"))
+	(lecturer_busy (week 4) (day *) (period "09:00") (lecturer "Anne Kayem"))
+	(lecturer_busy (week 5) (day *) (period "09:00") (lecturer "Edwin Blake"))
+	(lecturer_busy (week 6) (day "Tuesday") (period "09:00") (lecturer "Edwin Blake"))
+	(lecturer_busy (week 6) (day "Wednesday") (period "09:00") (lecturer "Edwin Blake"))
+	(lecturer_busy (week 6) (day "Thursday") (period "09:00") (lecturer "Edwin Blake"))
+	(lecturer_busy (week 6) (day "Friday") (period "09:00") (lecturer "Edwin Blake"))
+	(lecturer_busy (week 7) (day "Monday") (period "09:00") (lecturer "Edwin Blake"))
+	(lecturer_busy (week 7) (day "Tuesday") (period "09:00") (lecturer "Edwin Blake"))
+	(lecturer_busy (week 7) (day "Wednesday") (period "09:00") (lecturer "Edwin Blake"))
+	(lecturer_busy (week 7) (day "Thursday") (period "09:00") (lecturer "Edwin Blake"))
+
+	; CSC3020H
+	(lecturer_busy (week 1) (day "Monday") (period "10:00") (lecturer "Patrick Marais"))
+	(lecturer_busy (week 1) (day "Wednesday") (period "10:00") (lecturer "Patrick Marais"))
+	(lecturer_busy (week 2) (day "Monday") (period "10:00") (lecturer "Patrick Marais"))
+	(lecturer_busy (week 2) (day "Wednesday") (period "10:00") (lecturer "Patrick Marais"))
+	(lecturer_busy (week 3) (day "Monday") (period "10:00") (lecturer "Patrick Marais"))
+	(lecturer_busy (week 3) (day "Wednesday") (period "10:00") (lecturer "Patrick Marais"))
+	(lecturer_busy (week 4) (day "Monday") (period "10:00") (lecturer "Patrick Marais"))
+	(lecturer_busy (week 4) (day "Wednesday") (period "10:00") (lecturer "Patrick Marais"))
+	(lecturer_busy (week 5) (day "Monday") (period "10:00") (lecturer "Patrick Marais"))
+	(lecturer_busy (week 5) (day "Wednesday") (period "10:00") (lecturer "Patrick Marais"))
+	(lecturer_busy (week 6) (day "Monday") (period "10:00") (lecturer "Patrick Marais"))
+	(lecturer_busy (week 6) (day "Wednesday") (period "10:00") (lecturer "Patrick Marais"))
+	(lecturer_busy (week 7) (day "Monday") (period "10:00") (lecturer "Patrick Marais"))
+	(lecturer_busy (week 7) (day "Wednesday") (period "10:00") (lecturer "Patrick Marais"))
+
+	; CSC3022H
+	(lecturer_busy (week 1) (day "Tuesday") (period "10:00") (lecturer "Simon Perkins"))
+	(lecturer_busy (week 1) (day "Thursday") (period "10:00") (lecturer "Simon Perkins"))
+	(lecturer_busy (week 2) (day "Tuesday") (period "10:00") (lecturer "Simon Perkins"))
+	(lecturer_busy (week 2) (day "Thursday") (period "10:00") (lecturer "Simon Perkins"))
+	(lecturer_busy (week 3) (day "Tuesday") (period "10:00") (lecturer "Simon Perkins"))
+	(lecturer_busy (week 3) (day "Thursday") (period "10:00") (lecturer "Simon Perkins"))
+	(lecturer_busy (week 4) (day "Tuesday") (period "10:00") (lecturer "Simon Perkins"))
+	(lecturer_busy (week 4) (day "Thursday") (period "10:00") (lecturer "Simon Perkins"))
+	(lecturer_busy (week 5) (day "Tuesday") (period "10:00") (lecturer "Simon Perkins"))
+	(lecturer_busy (week 5) (day "Thursday") (period "10:00") (lecturer "Simon Perkins"))
+	(lecturer_busy (week 6) (day "Tuesday") (period "10:00") (lecturer "Simon Perkins"))
+	(lecturer_busy (week 6) (day "Thursday") (period "10:00") (lecturer "Simon Perkins"))
+	(lecturer_busy (week 7) (day "Tuesday") (period "10:00") (lecturer "Simon Perkins"))
+	(lecturer_busy (week 7) (day "Thursday") (period "10:00") (lecturer "Simon Perkins"))
+
+
+
+
+
+
+
 )
 
 ; reset all facts		 
