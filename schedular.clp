@@ -39,6 +39,9 @@
 
 	; and no other lecture from the same course is on that day
 	(not (booked_lecture (week ?w) (day ?d) (course ?course)))
+
+	; and no other lecture at the same time
+	(not (booked_lecture (week ?w) (day ?d) (period ?ts1)))
 	
 	; and the lecturer isn't already busy during that period
 	(not (lecturer_busy (week ?w|*) (day ?d|*) (period ?ts1|*) (lecturer ?lecturer)))
@@ -74,6 +77,10 @@
 	(period (value ?p2) (timestring ?ts2))
 
 	(not (booked_lecture (week ?w) (day ?d) (course ?course)))
+
+	; and no other lecture at the same time
+	(not (booked_lecture (week ?w) (day ?d) (period ?ts1)))
+	(not (booked_lecture (week ?w) (day ?d) (period ?ts2)))
 
 	(not (lecturer_busy (week ?w|*) (day ?d|*) (period ?ts1|*) (lecturer ?lecturer)))
 	(not (lecturer_busy (week ?w|*) (day ?d|*) (period ?ts2|*) (lecturer ?lecturer)))
@@ -114,6 +121,11 @@
 	(period (value ?p3) (timestring ?ts3))
 
 	(not (booked_lecture (week ?w) (day ?d) (course ?course)))
+
+	; and no other lecture at the same time
+	(not (booked_lecture (week ?w) (day ?d) (period ?ts1)))
+	(not (booked_lecture (week ?w) (day ?d) (period ?ts2)))
+	(not (booked_lecture (week ?w) (day ?d) (period ?ts3)))
 
 	(not (lecturer_busy (week ?w|*) (day ?d|*) (period ?ts1|*) (lecturer ?lecturer)))
 	(not (lecturer_busy (week ?w|*) (day ?d|*) (period ?ts2|*) (lecturer ?lecturer)))
@@ -176,7 +188,7 @@
 			; print out period and course in columns
 			(format t "|%-8s|" ?period:timestring)			
 			(do-for-all-facts ((?day day)) TRUE	
-				(bind ?slot_lectures (find-fact ((?bl booked_lecture)) (and (eq ?bl:week ?week:value) (eq ?bl:period ?period:timestring) (eq ?bl:day ?day:value))))	
+				(bind ?slot_lectures (find-fact ((?bl booked_lecture)) (and (= ?bl:week ?week:value) (eq ?bl:period ?period:timestring) (eq ?bl:day ?day:value))))	
 				(if (> (length$ ?slot_lectures) 0) then
 					(bind ?slot_lecture (nth$ 1 ?slot_lectures))
 					(format t " %-10s |" (fact-slot-value ?slot_lecture course))
@@ -188,7 +200,7 @@
 
 			; print out room name in colums
 			(do-for-all-facts ((?day day)) TRUE	
-				(bind ?slot_lectures (find-fact ((?bl booked_lecture)) (and (eq ?bl:week ?week:value) (eq ?bl:period ?period:timestring) (eq ?bl:day ?day:value))))	
+				(bind ?slot_lectures (find-fact ((?bl booked_lecture)) (and (= ?bl:week ?week:value) (eq ?bl:period ?period:timestring) (eq ?bl:day ?day:value))))	
 				(if (> (length$ ?slot_lectures) 0) then
 					(bind ?slot_lecture (nth$ 1 ?slot_lectures))
 					(format t " %-10s |" (fact-slot-value ?slot_lecture room))
