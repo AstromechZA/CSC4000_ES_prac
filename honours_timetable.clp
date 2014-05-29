@@ -9,7 +9,7 @@
 (deftemplate booked_lecture (slot week) (slot day) (slot period) (slot room) (slot course) (slot num))
 (deftemplate lecturer_busy (slot week) (slot day) (slot period) (slot lecturer))
 (deftemplate lectures (slot course) (slot lecturer) (slot count))
-(deftemplate lecture (slot course) (slot lecturer) (slot num))
+(deftemplate lecture (slot course) (slot lecturer) (slot num) (slot length))
 
 ; create all of the available slots
 (defrule create_available_slots
@@ -174,6 +174,7 @@
 	(lectures (course "IR") (lecturer "Hussein Suleman") (count 16))
 	(lectures (course "EC") (lecturer "Geoff Nitschke") (count 13))
 	(lectures (course "NIS") (lecturer "Andrew Hutchison") (count 16))
+	(lectures (course "ICT4D") (lecturer "Edwin Blake") (count 20))
 	
 	; student advisors have their open office hours where they can't have lectures
 	(lecturer_busy (week *) (day "Friday") (period "09:00") (lecturer "Michelle Kuttel"))
